@@ -4,6 +4,8 @@ version := "1.0"
 
 scalaVersion := "2.11.8"
 
+organization := "com.emarsys"
+
 libraryDependencies ++= {
 val akkaVersion = "2.5.0"
 Seq(
