@@ -49,7 +49,7 @@ class GoogleStorage(system: ActorSystem) {
     } catch {
       case e: Throwable => {
         system.log.error(e, "An exception occurred, message: {} ", e.getMessage)
-        ByteString.apply(Array[Byte]())
+        ByteString.empty
       }
     }
 
