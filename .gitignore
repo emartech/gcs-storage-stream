@@ -1,0 +1,9 @@
+*.class
+
+dist/*
+target/
+project/boot/
+project/plugins/project/
+
+# IntelliJ specific
+.idea
