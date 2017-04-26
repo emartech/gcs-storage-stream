@@ -36,10 +36,7 @@ class GoogleStorage(system: ActorSystem) {
   }
 
   def storageSource(fileName: String)(implicit ec: ExecutionContext) : Source[ByteString, _] =  {
-    Source.fromFuture(
-      Future {
-        readFiles(config.configOfProject("name"), fileName, config.configOfProject("bucket"))
-      })
+    Source.single(readFiles(config.configOfProject("name"), fileName, config.configOfProject("bucket")))
   }
 
   private def readFiles(project: String, fileName: String, bucketName: String)(implicit ec: ExecutionContext): ByteString =
