@@ -8,9 +8,11 @@ import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import com.google.api.services.storage.StorageScopes
 import com.google.auth.oauth2.GoogleCredentials
+import com.google.cloud.ReadChannel
 import com.google.cloud.storage.{Bucket, Storage, StorageOptions}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 object GoogleStorage {
 
@@ -30,28 +32,16 @@ class GoogleStorage(system: ActorSystem) {
     .getService();
 
 
-  private lazy val connection : (String, String) => Bucket = (project, bucket) => {
-    system.log.debug("Connect to {} bucket.", bucket)
-    storage(project).get(bucket)
-  }
-
-  def storageSource(fileName: String)(implicit ec: ExecutionContext) : Source[ByteString, _] =  {
-    Source.fromFuture(
-      Future {
-        readFiles(config.configOfProject("name"), fileName, config.configOfProject("bucket"))
-      })
-  }
-
-  private def readFiles(project: String, fileName: String, bucketName: String)(implicit ec: ExecutionContext): ByteString =
-    try {
-      system.log.debug("Read {} file content.", fileName)
-      ByteString.apply(connection(project, bucketName).get(fileName).getContent())
-    } catch {
-      case e: Throwable => {
-        system.log.error(e, "An exception occurred, message: {} ", e.getMessage)
-        ByteString.empty
-      }
+  def storageSource(fileName: String, chunkSize: Int = 64)(implicit ec: ExecutionContext) : Source[ByteString, _] =  {
+    createChannel(config.configOfProject("name"), config.configOfProject("bucket"), fileName) match {
+      case Success(channel) => Source.fromGraph(GoogleStorageGraphStage(channel, chunkSize))
+      case Failure(error) => system.log.error("An exception occured during creating channel, message {} ", error.getStackTrace)
+                         Source.empty
     }
+
+  }
+
+  private def createChannel(project: String, bucket: String, fileName: String) : Try[ReadChannel] = Try(storage(project).reader(bucket, fileName))
 
 
 }

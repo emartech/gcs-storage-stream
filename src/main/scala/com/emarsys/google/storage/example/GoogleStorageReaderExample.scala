@@ -28,6 +28,4 @@ object GoogleStorageReaderExample extends App {
   GoogleStorage(system).storageSource("ids_only.csv").via(csvLines).runForeach(println)
 
 
-
-
 }
