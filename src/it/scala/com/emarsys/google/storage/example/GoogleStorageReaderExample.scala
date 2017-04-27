@@ -25,7 +25,7 @@ object GoogleStorageReaderExample extends App {
 
   system.log.info("Start streaming file...")
 
-  GoogleStorage.storageSource("ids_only.csv").via(csvLines).runForeach(println)
+  GoogleStorage(system).storageSource("ids_only.csv").via(csvLines).runForeach(println)
 
 
 }
