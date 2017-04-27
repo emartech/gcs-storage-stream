@@ -2,7 +2,7 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.8",
   organization := "com.emarsys",
   name := "gcs-storage-stream",
-  version := "1.0.1"
+  version := "1.0.2"
 )
 
 lazy val root = (project in file(".")).
