@@ -19,8 +19,16 @@ class GoogleStorageGraphStage(storageChannel: ReadChannel, chunkKByteSize : Int 
 
   @scala.throws[Exception](classOf[Exception])
   override def createLogic(inheritedAttributes: Attributes): GraphStageLogic = new GraphStageLogic(shape) {
-    
-    val bytes = ByteBuffer.allocate(chunkKByteSize * 1024);
+
+   private def getValidChunkSize(chunkKByteSize: Int) = {
+      if (chunkKByteSize < 1) {
+        64
+      }else{
+        chunkKByteSize
+      }
+    }
+
+    val bytes = ByteBuffer.allocate(getValidChunkSize(chunkKByteSize) * 1024);
     
     setHandler(out, new OutHandler {
 

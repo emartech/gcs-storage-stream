@@ -23,7 +23,7 @@ class GoogleStorageItSpec extends WordSpec with Matchers with ScalaFutures {
 
   "Read file from storage" should {
 
-    "default chunk size is 64" in {
+    "default use chunk size which is 64" in {
       val list = mutable.MutableList.empty[Int]
         val testFile= getClass.getResourceAsStream("/empty64k")
       googleService.get(testBucket).create("test64",testFile)
@@ -36,7 +36,7 @@ class GoogleStorageItSpec extends WordSpec with Matchers with ScalaFutures {
       list.head shouldBe 64*1024
     }
 
-    "chunk size is set 1" in {
+    "be able to set chunk size to 1" in {
       val list = mutable.MutableList.empty[Int]
       val testFile= getClass.getResourceAsStream("/empty64k")
       googleService.get(testBucket).create("test1",testFile)
@@ -47,6 +47,32 @@ class GoogleStorageItSpec extends WordSpec with Matchers with ScalaFutures {
 
       list.size shouldBe 64
       list.head shouldBe 1024
+    }
+
+    "use default chunk size when size set to 0" in {
+      val list = mutable.MutableList.empty[Int]
+      val testFile= getClass.getResourceAsStream("/empty64k")
+      googleService.get(testBucket).create("test1",testFile)
+
+      Await.result(GoogleStorage.storageSource("test1", 0).runForeach(element => {
+        list += element.size
+      }), 3.seconds)
+
+      list.size shouldBe 1
+      list.head shouldBe 64*1024
+    }
+
+    "read file with content" in {
+      val list = mutable.MutableList.empty[String]
+      val testFile= getClass.getResourceAsStream("/test_content")
+      googleService.get(testBucket).create("test_content",testFile)
+
+      Await.result(GoogleStorage.storageSource("test_content", 1).runForeach(element => {
+        list += element.utf8String
+      }), 3.seconds)
+
+      list.size shouldBe 1
+      list.head shouldBe "Content is here."
     }
   }
 
