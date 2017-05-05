@@ -1,8 +1,8 @@
 lazy val commonSettings = Seq(
-  scalaVersion := "2.11.8",
+  scalaVersion := "2.12.2",
   organization := "com.emarsys",
   name := "gcs-storage-stream",
-  version := "1.0.2"
+  version := "1.0.3"
 )
 
 lazy val IntegrationTest = config("it") extend Test
