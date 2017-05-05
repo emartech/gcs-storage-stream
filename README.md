@@ -1,6 +1,6 @@
 # Google Storage reader with Akka Stream
 
-It is a library to connect a a google storage and fetch a specific file via Akka Stream.
+It is a library to connect a a google storage and fetch a specific file via Akka Stream. All GCS Storage configuration read from ActorSystem except file name.
 
 
 ## Usage
@@ -17,8 +17,8 @@ Add application.conf file contains all enviroment properties:
 
     googleStorage {
             project = {
-                name   = ""
-                bucket = ""
+                name   = "projekt name where the bucket is"
+                bucket = "bucket where the file is"
             }
         
             secret = {
@@ -34,9 +34,15 @@ Add application.conf file contains all enviroment properties:
             client_x509_cert_url= ""
         }
     }
+We suggest GCS Storage read key is read from environment variable.
 
 See example implementation is `GoogleStorageReaderExample.scala` object
 
+Testing
+------------------
+The GoogleStorageItSpec contains integration tests. it/resources/applicantion.conf file should fill with a proper endpoint of GCS storage. You can run the tests with the following commands:
+
+    sbt it:test
 
 Creating a release
 ------------------
