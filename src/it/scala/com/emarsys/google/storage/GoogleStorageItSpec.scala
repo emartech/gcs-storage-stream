@@ -76,4 +76,23 @@ class GoogleStorageItSpec extends WordSpec with Matchers with ScalaFutures {
     }
   }
 
+  "Check if file exists in storage" should {
+
+    "return false if file is not present" in {
+      val result = GoogleStorage.checkFile("foo")
+
+      result shouldBe false
+    }
+
+    "return true if file is not present" in {
+      val testFile= getClass.getResourceAsStream("/test_content")
+      googleService.get(testBucket).create("test_content",testFile)
+
+      val result = GoogleStorage.checkFile("test_content")
+
+      result shouldBe true
+    }
+
+  }
+
 }
