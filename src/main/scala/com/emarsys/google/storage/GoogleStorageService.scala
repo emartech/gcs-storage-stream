@@ -12,7 +12,7 @@ object GoogleStorageService {
 
   def apply(project: String)(implicit system: ActorSystem) = {
     StorageOptions.newBuilder()
-      .setCredentials(GoogleCredentials.fromStream(new ByteArrayInputStream(DefaultConfig(system).configAsJson("secret").getBytes)).createScoped(StorageScopes.all())).setProjectId(project)
+      .setCredentials(DefaultConfig(system).credentials).setProjectId(project)
       .build()
       .getService();
   }
