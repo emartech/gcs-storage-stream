@@ -16,6 +16,9 @@ For versions actual version :
 Add application.conf file contains all enviroment properties:
 
     googleStorage {
+            chunk-size = 64
+            chunk-size = ${?GCS_CHUNK_SIZE}
+
             project = {
                 name   = "projekt name where the bucket is"
                 bucket = "bucket where the file is"

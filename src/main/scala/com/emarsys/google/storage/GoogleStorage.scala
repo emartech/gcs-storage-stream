@@ -13,20 +13,28 @@ import scala.concurrent.JavaConversions._
 
 trait GoogleStorage {
 
-  def storageSource(fileName: String, chunkSize: Int = 64)(implicit ec: ExecutionContext, actorSystem: ActorSystem) : Source[ByteString, _] =  {
-    createChannel(getConfigValue("name"), getConfigValue("bucket"), fileName) match {
-      case Success(channel) => Source.fromGraph(GoogleStorageGraphStage(channel, chunkSize))
+  def storageSource(fileName: String, chunkSize: Int = 0)(implicit ec: ExecutionContext, actorSystem: ActorSystem) : Source[ByteString, _] =  {
+    val chunkKbSize = getValidChunkSize(chunkSize)
+    createChannel(getConfigOfProject("name"), getConfigOfProject("bucket"), fileName) match {
+      case Success(channel) => Source.fromGraph(GoogleStorageGraphStage(channel, chunkKbSize))
       case Failure(error) => actorSystem.log.error("An exception occured during creating channel, message {} ", error.getStackTrace)
                          Source.empty
     }
+  }
 
+  def getValidChunkSize(chunkSize: Int)(implicit actorSystem: ActorSystem) = {
+    Seq(chunkSize, getConfigValue("chunk-size", "0").toInt).find(_ > 0).getOrElse(64)
   }
 
   def checkFile(fileName: String)(implicit ec: ExecutionContext, actorSystem: ActorSystem): Boolean = {
-    GoogleStorageService(getConfigValue("name")).get(getConfigValue("bucket")).get(fileName) != null
+    GoogleStorageService(getConfigOfProject("name")).get(getConfigOfProject("bucket")).get(fileName) != null
   }
 
-  private def getConfigValue(key: String)(implicit actorSystem: ActorSystem) = {
+  private def getConfigValue(key: String, default: String)(implicit actorSystem: ActorSystem) = {
+    DefaultConfig(actorSystem).configValue(key, default)
+  }
+
+  private def getConfigOfProject(key: String)(implicit actorSystem: ActorSystem) = {
     DefaultConfig(actorSystem).configOfProject(key)
   }
 

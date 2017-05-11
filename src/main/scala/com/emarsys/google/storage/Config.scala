@@ -16,6 +16,10 @@ class DefaultConfig(system: ActorSystem) {
 
   private val googleStorageConfig = system.settings.config getConfig "googleStorage"
 
+  def configValue(properties: String, default: String) = {
+    if (googleStorageConfig.hasPath(properties)) googleStorageConfig.getString(properties) else default
+  }
+
   def configOfProject(properties: String) = {
     googleStorageConfig.getConfig("project").getString(properties)
   }
