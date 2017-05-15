@@ -4,18 +4,20 @@ import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import com.google.cloud.ReadChannel
-
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.JavaConversions._
-
 
 
 trait GoogleStorage {
 
   def storageSource(fileName: String, chunkSize: Int = 0)(implicit ec: ExecutionContext, actorSystem: ActorSystem) : Source[ByteString, _] =  {
+    storageSource(fileName, getConfigOfProject("name"), getConfigOfProject("bucket"), chunkSize)
+  }
+
+  def storageSource(fileName: String, project: String, bucket: String, chunkSize: Int = 0)(implicit ec: ExecutionContext, actorSystem: ActorSystem) : Source[ByteString, _] =  {
     val chunkKbSize = getValidChunkSize(chunkSize)
-    createChannel(getConfigOfProject("name"), getConfigOfProject("bucket"), fileName) match {
+    createChannel(project, bucket, fileName) match {
       case Success(channel) => Source.fromGraph(GoogleStorageGraphStage(channel, chunkKbSize))
       case Failure(error) => actorSystem.log.error("An exception occured during creating channel, message {} ", error.getStackTrace)
                          Source.empty
@@ -38,7 +40,8 @@ trait GoogleStorage {
     DefaultConfig(actorSystem).configOfProject(key)
   }
 
-  private def createChannel(project: String, bucket: String, fileName: String)(implicit actorSystem: ActorSystem) : Try[ReadChannel] = Try( GoogleStorageService(project).reader(bucket, fileName))
+  private def createChannel(project: String, bucket: String, fileName: String)(implicit actorSystem: ActorSystem) : Try[ReadChannel] =
+    Try( GoogleStorageService(project).reader(bucket, fileName))
 
 }
 

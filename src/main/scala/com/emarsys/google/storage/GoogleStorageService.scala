@@ -14,7 +14,7 @@ object GoogleStorageService {
     StorageOptions.newBuilder()
       .setCredentials(DefaultConfig(system).credentials).setProjectId(project)
       .build()
-      .getService();
+      .getService
   }
 
 }
