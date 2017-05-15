@@ -15,7 +15,7 @@ trait GoogleStorage {
     storageSource(fileName, getConfigOfProject("name"), getConfigOfProject("bucket"), chunkSize)
   }
 
-  def storageSource(fileName: String, project: String, bucket: String, chunkSize: Int = 0)(implicit ec: ExecutionContext, actorSystem: ActorSystem) : Source[ByteString, _] =  {
+  def storageSource(fileName: String, project: String, bucket: String, chunkSize: Int)(implicit ec: ExecutionContext, actorSystem: ActorSystem) : Source[ByteString, _] =  {
     val chunkKbSize = getValidChunkSize(chunkSize)
     createChannel(project, bucket, fileName) match {
       case Success(channel) => Source.fromGraph(GoogleStorageGraphStage(channel, chunkKbSize))
