@@ -7,3 +7,4 @@ project/plugins/project/
 
 # IntelliJ specific
 .idea
+.env
