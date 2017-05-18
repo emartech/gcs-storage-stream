@@ -22,6 +22,10 @@ class DefaultConfig(system: ActorSystem) {
 
   lazy val credentials: GoogleCredentials = GoogleCredentials.fromStream(new ByteArrayInputStream(DefaultConfig(system).configAsJson("secret").getBytes)).createScoped(StorageScopes.all())
 
+  val useProxy = googleStorageConfig.hasPath("proxy-host")
+  val proxyHost = configValue("proxy-host", "")
+  val proxyPort = configValue("proxy-port", "0").toInt
+
   def configValue(properties: String, default: String) = {
     if (googleStorageConfig.hasPath(properties)) googleStorageConfig.getString(properties) else default
   }
