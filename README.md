@@ -11,7 +11,7 @@ Add the following to `build.sbt`:
 
 For versions actual version :
 
-     "com.emarsys"              %% "gcs-storage-stream"       % "1.0.1"
+     "com.emarsys"              %% "gcs-storage-stream"       % "1.0.9"
 
 Add application.conf file contains all enviroment properties:
 
@@ -39,7 +39,30 @@ Add application.conf file contains all enviroment properties:
     }
 We suggest GCS Storage read key is read from environment variable.
 
+
 See example implementation is `GoogleStorageReaderExample.scala` object
+
+    object GoogleStorageReaderExample extends App {
+    
+        implicit val system       = ActorSystem("gc-example")
+        
+        implicit val materializer = ActorMaterializer()
+        
+        lazy val csvLines =
+            Flow[ByteString]
+                .via(Framing.delimiter(ByteString("\n"), maximumFrameLength = 25))
+                .groupedWithin(1000, 1 seconds)
+                .map(_.map(_.utf8String).mkString(","))
+                
+        system.log.info("Start streaming file...")
+        
+         //bucket, projectId comes from .conf
+        GoogleStorage.storageSource("ids_only.csv").via(csvLines).runForeach(println)
+        
+        //or projectId does not come from .conf
+        GoogleStorage.storageSource("ids_only.csv", "projectId", "bucket", 64).via(csvLines).runForeach(println)
+        
+    }
 
 Testing
 ------------------
