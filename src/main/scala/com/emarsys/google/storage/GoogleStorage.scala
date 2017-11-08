@@ -1,12 +1,16 @@
 package com.emarsys.google.storage
 
+import java.net.URL
+
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import com.google.cloud.ReadChannel
+import com.google.cloud.storage.Blob
+
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.FiniteDuration
 import scala.util.{Failure, Success, Try}
-import scala.concurrent.JavaConversions._
 
 
 trait GoogleStorage {
@@ -29,7 +33,15 @@ trait GoogleStorage {
   }
 
   def checkFile(fileName: String)(implicit ec: ExecutionContext, actorSystem: ActorSystem): Boolean = {
-    GoogleStorageService(getConfigOfProject("name")).get(getConfigOfProject("bucket")).get(fileName) != null
+    getBlob(fileName) != null
+  }
+
+  def signedUrlFor(fileName: String, duration: FiniteDuration)(implicit actorSystem: ActorSystem): Option[URL] = {
+    Option(getBlob(fileName)).map(_.signUrl(duration.length, duration.unit))
+  }
+
+  private def getBlob(fileName: String)(implicit actorSystem: ActorSystem): Blob = {
+    GoogleStorageService(getConfigOfProject("name")).get(getConfigOfProject("bucket")).get(fileName)
   }
 
   private def getConfigValue(key: String, default: String)(implicit actorSystem: ActorSystem) = {

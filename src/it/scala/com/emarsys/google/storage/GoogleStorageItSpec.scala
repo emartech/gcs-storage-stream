@@ -76,21 +76,44 @@ class GoogleStorageItSpec extends WordSpec with Matchers with ScalaFutures {
     }
   }
 
-  "Check if file exists in storage" should {
+  "Check if file exists in storage" when {
 
-    "return false if file is not present" in {
-      val result = GoogleStorage.checkFile("foo")
-
-      result shouldBe false
+    "file does not exist" should {
+      "return false" in {
+        GoogleStorage.checkFile("foo") shouldBe false
+      }
     }
 
-    "return true if file is not present" in {
-      val testFile= getClass.getResourceAsStream("/test_content")
-      googleService.get(testBucket).create("test_content",testFile)
+    "file exists" should {
+      "return true" in {
+        val testFile= getClass.getResourceAsStream("/test_content")
+        googleService.get(testBucket).create("test_content",testFile)
 
-      val result = GoogleStorage.checkFile("test_content")
+        GoogleStorage.checkFile("test_content") shouldBe true
+      }
+    }
 
-      result shouldBe true
+  }
+
+  "Signed url for file name and duration" when {
+
+    "file does not exist" should {
+      "return none" in {
+        GoogleStorage.signedUrlFor("non_existing_file", 5.seconds) shouldBe None
+      }
+    }
+
+    "file exists" should {
+      "return properly signed url" in {
+        val testFileName = "test_content"
+        val testFile = getClass.getResourceAsStream("/" + testFileName)
+        googleService.get(testBucket).create(testFileName, testFile)
+
+        val Some(url) = GoogleStorage.signedUrlFor(testFileName, 5.seconds)
+        url.getPath should endWith(testFileName)
+        url.getQuery should include("Expires")
+        url.getQuery should include("Signature")
+      }
     }
 
   }
