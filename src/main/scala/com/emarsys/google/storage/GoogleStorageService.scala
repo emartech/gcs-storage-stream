@@ -1,7 +1,7 @@
 package com.emarsys.google.storage
 
 import akka.actor.ActorSystem
-import com.google.cloud.HttpTransportOptions
+import com.google.cloud.http.HttpTransportOptions
 import com.google.cloud.storage.StorageOptions
 
 

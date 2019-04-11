@@ -18,7 +18,7 @@ Seq(
   "com.typesafe.akka" %% "akka-stream"                  % akkaVersion,
   "com.typesafe.akka" %% "akka-actor"                   % akkaVersion,
   "org.scalatest"     %% "scalatest"                    % "3.0.1" % "it,test",
-  "com.google.cloud"  %   "google-cloud-storage"        % "0.13.0-beta"
+  "com.google.cloud"  %  "google-cloud-storage"         % "1.53.0"
  )
 }
 

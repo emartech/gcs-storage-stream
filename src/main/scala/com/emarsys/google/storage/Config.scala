@@ -8,7 +8,7 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.services.storage.StorageScopes
 import com.google.auth.http.HttpTransportFactory
 import com.google.auth.oauth2.GoogleCredentials
-import com.google.cloud.HttpTransportOptions.DefaultHttpTransportFactory
+import com.google.cloud.http.HttpTransportOptions.DefaultHttpTransportFactory
 import com.typesafe.config.ConfigRenderOptions
 
 
