@@ -12,15 +12,15 @@ lazy val root = (project in file(".")).
   settings(Defaults.itSettings: _*).
   settings(
 
-libraryDependencies ++= {
-val akkaVersion = "2.5.0"
-Seq(
-  "com.typesafe.akka" %% "akka-stream"                  % akkaVersion,
-  "com.typesafe.akka" %% "akka-actor"                   % akkaVersion,
-  "org.scalatest"     %% "scalatest"                    % "3.0.1" % "it,test",
-  "com.google.cloud"  %  "google-cloud-storage"         % "1.53.0"
- )
-}
+  libraryDependencies ++= {
+  val akkaVersion = "2.5.0"
+  Seq(
+    "com.typesafe.akka" %% "akka-stream"                  % akkaVersion,
+    "com.typesafe.akka" %% "akka-actor"                   % akkaVersion,
+    "org.scalatest"     %% "scalatest"                    % "3.0.1" % "it,test",
+    "com.google.cloud"  %  "google-cloud-storage"         % "1.53.0"
+   )
+  }
 
 )
 
