@@ -34,7 +34,7 @@ lazy val root = (project in file("."))
     scalacOptions ++= versionSpecificScalacOptions(scalaVersion.value),
     javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
     libraryDependencies ++= {
-      val akkaVersion = "2.5.0"
+      val akkaVersion = "2.5.31"
       Seq(
         "com.typesafe.akka" %% "akka-stream"         % akkaVersion,
         "com.typesafe.akka" %% "akka-actor"          % akkaVersion,
