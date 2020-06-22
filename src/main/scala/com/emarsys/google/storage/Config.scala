@@ -11,7 +11,6 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.http.HttpTransportOptions.DefaultHttpTransportFactory
 import com.typesafe.config.ConfigRenderOptions
 
-
 object DefaultConfig {
 
   def apply(s: ActorSystem) = {
@@ -29,7 +28,7 @@ class DefaultConfig(system: ActorSystem) {
     GoogleCredentials.fromStream(inputStream, httpTransportFactory).createScoped(StorageScopes.all())
   }
 
-  val useProxy = googleStorageConfig.hasPath("proxy-host")
+  val useProxy  = googleStorageConfig.hasPath("proxy-host")
   val proxyHost = configValue("proxy-host", "")
   val proxyPort = configValue("proxy-port", "0").toInt
 
@@ -40,7 +39,7 @@ class DefaultConfig(system: ActorSystem) {
       new HttpTransportFactory {
         override def create() = {
           val socketAddress = new InetSocketAddress(proxyHost, proxyPort)
-          val proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, socketAddress)
+          val proxy         = new java.net.Proxy(java.net.Proxy.Type.HTTP, socketAddress)
           new NetHttpTransport.Builder().setProxy(proxy).build()
         }
       }
@@ -64,4 +63,3 @@ class DefaultConfig(system: ActorSystem) {
       .replace("\\\\", "\\")
   }
 }
-

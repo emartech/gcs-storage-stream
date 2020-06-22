@@ -9,12 +9,10 @@ import com.emarsys.google.storage.GoogleStorage
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
-
 object GoogleStorageReaderExample extends App {
 
   implicit val system       = ActorSystem("gc-example")
   implicit val materializer = ActorMaterializer()
-
 
   lazy val csvLines =
     Flow[ByteString]
@@ -22,10 +20,8 @@ object GoogleStorageReaderExample extends App {
       .groupedWithin(1000, 1 seconds)
       .map(_.map(_.utf8String).mkString(","))
 
-
   system.log.info("Start streaming file...")
 
   GoogleStorage.storageSource("ids_only.csv").via(csvLines).runForeach(println)
-
 
 }

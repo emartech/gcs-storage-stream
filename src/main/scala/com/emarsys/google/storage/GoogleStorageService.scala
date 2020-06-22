@@ -4,11 +4,11 @@ import akka.actor.ActorSystem
 import com.google.cloud.http.HttpTransportOptions
 import com.google.cloud.storage.StorageOptions
 
-
 object GoogleStorageService {
 
   def apply(project: String)(implicit system: ActorSystem) = {
-    StorageOptions.newBuilder()
+    StorageOptions
+      .newBuilder()
       .setTransportOptions(createTransportOptions())
       .setCredentials(DefaultConfig(system).credentials)
       .setProjectId(project)
