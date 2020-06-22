@@ -1,2 +1,2 @@
-addSbtPlugin("au.com.onegeek" %% "sbt-dotenv" % "2.1.146")
+addSbtPlugin("au.com.onegeek" %% "sbt-dotenv" % "1.2.88")
 

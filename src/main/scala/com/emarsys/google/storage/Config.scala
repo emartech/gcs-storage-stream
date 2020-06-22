@@ -56,7 +56,12 @@ class DefaultConfig(system: ActorSystem) {
   }
 
   def configAsJson(properties: String) = {
-    googleStorageConfig.getValue(properties).render(ConfigRenderOptions.defaults().setJson(true).setOriginComments(false)).replace("\\\\","\\")
+    googleStorageConfig
+      .getValue(properties)
+      .render(
+        ConfigRenderOptions.defaults().setJson(true).setOriginComments(false)
+      )
+      .replace("\\\\", "\\")
   }
-
 }
+
