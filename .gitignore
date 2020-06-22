@@ -8,3 +8,8 @@ project/plugins/project/
 # IntelliJ specific
 .idea
 .env
+
+# metals and bloop
+.bloop
+.metals
+project/.bloop
