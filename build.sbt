@@ -39,7 +39,7 @@ lazy val root = (project in file("."))
         "com.typesafe.akka" %% "akka-stream"         % akkaVersion,
         "com.typesafe.akka" %% "akka-actor"          % akkaVersion,
         "org.scalatest"     %% "scalatest"           % "3.2.0" % Test,
-        "com.google.cloud"  % "google-cloud-storage" % "1.53.0"
+        "com.google.cloud"  % "google-cloud-storage" % "1.102.0"
       )
     }
   )
