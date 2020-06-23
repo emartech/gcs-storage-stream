@@ -60,7 +60,17 @@ inThisBuild(
       Developer("suliatis", "Attila Suli", "attila.suli@emarsys.com", url("https://github.com/suliatis")),
       Developer("galatt", "Attila Peter Gal", "attila.gal@emarsys.com", url("https://github.com/galatt"))
     )
-  )
+  ),
+  scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/emartech/gcs-bigquery-scala-api"),
+        "scm:git:git@github.com:emartech/gcs-bigquery-scala-api.git"
+      )
+    ),
+    // These are the sbt-release-early settings to configure
+    pgpPublicRing := file("./ci/local.pubring.asc"),
+    pgpSecretRing := file("./ci/local.secring.asc"),
+    releaseEarlyWith := SonatypePublisher
 )
 
 def versionSpecificScalacOptions(scalaV: String) =
