@@ -17,7 +17,7 @@ object GoogleStorageReaderExample extends App {
   lazy val csvLines =
     Flow[ByteString]
       .via(Framing.delimiter(ByteString("\n"), maximumFrameLength = 25))
-      .groupedWithin(1000, 1 seconds)
+      .groupedWithin(1000, 1.seconds)
       .map(_.map(_.utf8String).mkString(","))
 
   system.log.info("Start streaming file...")

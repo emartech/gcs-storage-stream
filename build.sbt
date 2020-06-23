@@ -38,7 +38,7 @@ lazy val root = (project in file("."))
       Seq(
         "com.typesafe.akka" %% "akka-stream"         % akkaVersion,
         "com.typesafe.akka" %% "akka-actor"          % akkaVersion,
-        "org.scalatest"     %% "scalatest"           % "3.0.1" % "it,test",
+        "org.scalatest"     %% "scalatest"           % "3.2.0" % Test,
         "com.google.cloud"  % "google-cloud-storage" % "1.53.0"
       )
     }

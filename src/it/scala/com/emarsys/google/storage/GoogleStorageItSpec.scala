@@ -3,14 +3,15 @@ package com.emarsys.google.storage
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 
-import scala.collection.mutable
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import akka.stream.scaladsl.Sink
 
-class GoogleStorageItSpec extends WordSpec with Matchers with ScalaFutures {
+class GoogleStorageItSpec extends AnyWordSpec with Matchers with ScalaFutures {
 
   implicit val system = ActorSystem("google-storage-stream")
   implicit val materializer = ActorMaterializer()
@@ -24,55 +25,40 @@ class GoogleStorageItSpec extends WordSpec with Matchers with ScalaFutures {
   "Read file from storage" should {
 
     "default use chunk size which is 64" in {
-      val list = mutable.MutableList.empty[Int]
-        val testFile= getClass.getResourceAsStream("/empty64k")
+      val testFile= getClass.getResourceAsStream("/empty64k")
       googleService.get(testBucket).create("test64",testFile)
 
-      Await.result(GoogleStorage.storageSource("test64").runForeach(element => {
-            list += element.size
-      }), 3.seconds)
+      val head = Await.result(GoogleStorage.storageSource("test64").map(_.size).runWith(Sink.headOption), 3.seconds)
 
-      list.size shouldBe 1
-      list.head shouldBe 64*1024
+      head shouldBe Some(64*1024)
     }
 
     "be able to set chunk size to 1" in {
-      val list = mutable.MutableList.empty[Int]
       val testFile= getClass.getResourceAsStream("/empty64k")
       googleService.get(testBucket).create("test1",testFile)
 
-      Await.result(GoogleStorage.storageSource("test1", 1).runForeach(element => {
-        list += element.size
-      }), 3.seconds)
+      val list = Await.result(GoogleStorage.storageSource("test1", 1).map(_.size).runWith(Sink.seq), 3.seconds)
 
       list.size shouldBe 64
       list.head shouldBe 1024
     }
 
     "use default chunk size when size set to 0" in {
-      val list = mutable.MutableList.empty[Int]
       val testFile= getClass.getResourceAsStream("/empty64k")
       googleService.get(testBucket).create("test1",testFile)
 
-      Await.result(GoogleStorage.storageSource("test1", 0).runForeach(element => {
-        list += element.size
-      }), 3.seconds)
+      val head = Await.result(GoogleStorage.storageSource("test1", 0).map(_.size).runWith(Sink.headOption), 3.seconds)
 
-      list.size shouldBe 1
-      list.head shouldBe 64*1024
+      head shouldBe Some(64*1024)
     }
 
     "read file with content" in {
-      val list = mutable.MutableList.empty[String]
       val testFile= getClass.getResourceAsStream("/test_content")
       googleService.get(testBucket).create("test_content",testFile)
 
-      Await.result(GoogleStorage.storageSource("test_content", 1).runForeach(element => {
-        list += element.utf8String
-      }), 3.seconds)
+      val head = Await.result(GoogleStorage.storageSource("test_content", 1).map(_.utf8String).runWith(Sink.headOption), 3.seconds)
 
-      list.size shouldBe 1
-      list.head shouldBe "Content is here."
+      head shouldBe Some("Content is here.")
     }
   }
 
