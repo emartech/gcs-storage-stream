@@ -3,7 +3,7 @@ package com.emarsys.google.storage
 import java.io.ByteArrayInputStream
 import java.net.InetSocketAddress
 
-import com.emarsys.google.storage.Config.GoogleConfig
+import com.emarsys.google.storage.Config.{GoogleConfig, GoogleStorageConfig}
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.services.storage.StorageScopes
 import com.google.auth.http.HttpTransportFactory
@@ -16,7 +16,14 @@ object Config {
   val default = new Config()
 
   case class GoogleConfig(
-      useWorkloadIdentityAuth: Boolean
+      useWorkloadIdentityAuth: Boolean,
+      storage: GoogleStorageConfig
+  )
+
+  case class GoogleStorageConfig(
+      chunkSize: Int,
+      proxyHost: String,
+      proxyPort: Int
   )
 }
 
@@ -27,7 +34,12 @@ class Config() {
   private val googleStorageConfig = config.getConfig("googleStorage")
 
   lazy val google: GoogleConfig = GoogleConfig(
-    useWorkloadIdentityAuth = googleConfig.getBoolean("use-workload-identity-auth")
+    useWorkloadIdentityAuth = googleConfig.getBoolean("use-workload-identity-auth"),
+    GoogleStorageConfig(
+      chunkSize = googleStorageConfig.getInt("chunk-size"),
+      proxyHost = googleStorageConfig.getString("proxy-host"),
+      proxyPort = googleStorageConfig.getInt("proxy-port")
+    )
   )
 
   lazy val credentials: GoogleCredentials = {
