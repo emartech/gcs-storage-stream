@@ -6,13 +6,22 @@ import com.google.cloud.storage.StorageOptions
 object GoogleStorageService {
 
   def apply(project: String, config: Config) = {
-    StorageOptions
-      .newBuilder()
-      .setTransportOptions(createTransportOptions(config))
-      .setCredentials(config.credentials)
-      .setProjectId(project)
-      .build()
-      .getService
+    if (config.google.useWorkloadIdentityAuth) {
+      StorageOptions
+        .newBuilder()
+        .setTransportOptions(createTransportOptions(config))
+        .setProjectId(project)
+        .build()
+        .getService
+    } else {
+      StorageOptions
+        .newBuilder()
+        .setTransportOptions(createTransportOptions(config))
+        .setCredentials(config.credentials)
+        .setProjectId(project)
+        .build()
+        .getService
+    }
   }
 
   private def createTransportOptions(config: Config): HttpTransportOptions = {
