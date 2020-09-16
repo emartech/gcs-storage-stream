@@ -8,18 +8,18 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 import akka.stream.scaladsl.Sink
 
 class GoogleStorageItSpec extends AnyWordSpec with Matchers with ScalaFutures {
 
   implicit val system = ActorSystem("google-storage-stream")
   implicit val materializer = ActorMaterializer()
+  val config: Config = Config.default
 
   val testConfig = system.settings.config.getConfig("googleStorage")
   val testBucket = testConfig.getString("project.bucket")
   val testProject = testConfig.getString("project.name")
-  val googleService = GoogleStorageService(testProject)
+  val googleService = GoogleStorageService(testProject, config)
 
 
   "Read file from storage" should {

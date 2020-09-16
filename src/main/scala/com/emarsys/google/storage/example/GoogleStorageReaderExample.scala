@@ -6,7 +6,6 @@ import akka.stream.scaladsl.{Flow, Framing}
 import akka.util.ByteString
 import com.emarsys.google.storage.GoogleStorage
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 object GoogleStorageReaderExample extends App {

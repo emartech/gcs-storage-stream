@@ -1,23 +1,21 @@
 package com.emarsys.google.storage
 
-import akka.actor.ActorSystem
 import com.google.cloud.http.HttpTransportOptions
 import com.google.cloud.storage.StorageOptions
 
 object GoogleStorageService {
 
-  def apply(project: String)(implicit system: ActorSystem) = {
+  def apply(project: String, config: Config) = {
     StorageOptions
       .newBuilder()
-      .setTransportOptions(createTransportOptions())
-      .setCredentials(Config(system).credentials)
+      .setTransportOptions(createTransportOptions(config))
+      .setCredentials(config.credentials)
       .setProjectId(project)
       .build()
       .getService
   }
 
-  private def createTransportOptions()(implicit system: ActorSystem): HttpTransportOptions = {
-    val config = Config(system)
+  private def createTransportOptions(config: Config): HttpTransportOptions = {
     HttpTransportOptions.newBuilder().setHttpTransportFactory(config.httpTransportFactory).build()
   }
 
