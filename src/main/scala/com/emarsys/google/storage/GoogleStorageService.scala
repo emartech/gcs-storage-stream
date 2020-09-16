@@ -10,14 +10,14 @@ object GoogleStorageService {
     StorageOptions
       .newBuilder()
       .setTransportOptions(createTransportOptions())
-      .setCredentials(DefaultConfig(system).credentials)
+      .setCredentials(Config(system).credentials)
       .setProjectId(project)
       .build()
       .getService
   }
 
   private def createTransportOptions()(implicit system: ActorSystem): HttpTransportOptions = {
-    val config = DefaultConfig(system)
+    val config = Config(system)
     HttpTransportOptions.newBuilder().setHttpTransportFactory(config.httpTransportFactory).build()
   }
 

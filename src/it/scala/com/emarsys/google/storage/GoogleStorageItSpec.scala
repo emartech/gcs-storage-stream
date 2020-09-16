@@ -16,7 +16,7 @@ class GoogleStorageItSpec extends AnyWordSpec with Matchers with ScalaFutures {
   implicit val system = ActorSystem("google-storage-stream")
   implicit val materializer = ActorMaterializer()
 
-  val testConfig = system.settings.config getConfig "googleStorage"
+  val testConfig = system.settings.config.getConfig("googleStorage")
   val testBucket = testConfig.getString("project.bucket")
   val testProject = testConfig.getString("project.name")
   val googleService = GoogleStorageService(testProject)

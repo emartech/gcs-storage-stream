@@ -51,11 +51,11 @@ trait GoogleStorage {
   }
 
   private def getConfigValue(key: String, default: String)(implicit actorSystem: ActorSystem) = {
-    DefaultConfig(actorSystem).configValue(key, default)
+    Config(actorSystem).configValue(key, default)
   }
 
   private def getConfigOfProject(key: String)(implicit actorSystem: ActorSystem) = {
-    DefaultConfig(actorSystem).configOfProject(key)
+    Config(actorSystem).configOfProject(key)
   }
 
   private def createChannel(project: String, bucket: String, fileName: String)(

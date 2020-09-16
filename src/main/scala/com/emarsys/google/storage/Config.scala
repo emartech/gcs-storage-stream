@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream
 import java.net.InetSocketAddress
 
 import akka.actor.ActorSystem
-import com.emarsys.google.storage.DefaultConfig.GoogleConfig
+import com.emarsys.google.storage.Config.GoogleConfig
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.services.storage.StorageScopes
 import com.google.auth.http.HttpTransportFactory
@@ -12,10 +12,10 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.http.HttpTransportOptions.DefaultHttpTransportFactory
 import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
 
-object DefaultConfig {
+object Config {
 
   def apply(s: ActorSystem) = {
-    new DefaultConfig(s)
+    new Config(s)
   }
 
   case class GoogleConfig(
@@ -23,7 +23,7 @@ object DefaultConfig {
   )
 }
 
-class DefaultConfig(system: ActorSystem) {
+class Config(system: ActorSystem) {
   private val config       = ConfigFactory.load()
   private val googleConfig = config.getConfig("google")
 
@@ -34,7 +34,7 @@ class DefaultConfig(system: ActorSystem) {
   )
 
   lazy val credentials: GoogleCredentials = {
-    val inputStream = new ByteArrayInputStream(DefaultConfig(system).configAsJson("secret").getBytes)
+    val inputStream = new ByteArrayInputStream(Config(system).configAsJson("secret").getBytes)
     GoogleCredentials.fromStream(inputStream, httpTransportFactory).createScoped(StorageScopes.all())
   }
 
