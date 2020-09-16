@@ -4,12 +4,13 @@ import java.io.ByteArrayInputStream
 import java.net.InetSocketAddress
 
 import akka.actor.ActorSystem
+import com.emarsys.google.storage.DefaultConfig.GoogleConfig
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.services.storage.StorageScopes
 import com.google.auth.http.HttpTransportFactory
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.http.HttpTransportOptions.DefaultHttpTransportFactory
-import com.typesafe.config.ConfigRenderOptions
+import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
 
 object DefaultConfig {
 
@@ -17,11 +18,20 @@ object DefaultConfig {
     new DefaultConfig(s)
   }
 
+  case class GoogleConfig(
+      useWorkloadIdentityAuth: Boolean
+  )
 }
 
 class DefaultConfig(system: ActorSystem) {
+  private val config       = ConfigFactory.load()
+  private val googleConfig = config.getConfig("google")
 
-  private val googleStorageConfig = system.settings.config getConfig "googleStorage"
+  private val googleStorageConfig = system.settings.config.getConfig("googleStorage")
+
+  lazy val google: GoogleConfig = GoogleConfig(
+    useWorkloadIdentityAuth = googleConfig.getBoolean("use-workload-identity-auth")
+  )
 
   lazy val credentials: GoogleCredentials = {
     val inputStream = new ByteArrayInputStream(DefaultConfig(system).configAsJson("secret").getBytes)
