@@ -17,7 +17,8 @@ trait GoogleStorage {
       fileName: String,
       chunkSize: Int = 0
   )(implicit actorSystem: ActorSystem): Source[ByteString, _] = {
-    storageSource(fileName, getConfigOfProject("name"), getConfigOfProject("bucket"), chunkSize)
+    val project = Config.default.google.storage.project
+    storageSource(fileName, project.name, project.bucket, chunkSize)
   }
 
   def storageSource(fileName: String, project: String, bucket: String, chunkSize: Int)(
@@ -32,28 +33,23 @@ trait GoogleStorage {
     }
   }
 
-  def getValidChunkSize(chunkSize: Int) = {
-    Seq(chunkSize, getConfigValue("chunk-size", "0").toInt).find(_ > 0).getOrElse(64)
+  def getValidChunkSize(chunkSize: Int): Int = {
+    Seq(chunkSize, Config.default.google.storage.chunkSize).find(_ > 0).getOrElse(64)
   }
 
   def checkFile(fileName: String): Boolean = {
-    getBlob(fileName) != null
+    getBlob(fileName, Config.default) != null
   }
 
   def signedUrlFor(fileName: String, duration: FiniteDuration): Option[URL] = {
-    Option(getBlob(fileName)).map(_.signUrl(duration.length, duration.unit))
+    Option(getBlob(fileName, Config.default)).map(_.signUrl(duration.length, duration.unit))
   }
 
-  private def getBlob(fileName: String): Blob = {
-    GoogleStorageService(getConfigOfProject("name"), Config.default).get(getConfigOfProject("bucket")).get(fileName)
-  }
-
-  private def getConfigValue(key: String, default: String) = {
-    Config.default.configValue(key, default)
-  }
-
-  private def getConfigOfProject(key: String) = {
-    Config.default.configOfProject(key)
+  private def getBlob(fileName: String, config: Config): Blob = {
+    val project = config.google.storage.project
+    GoogleStorageService(project.name, config)
+      .get(project.bucket)
+      .get(fileName)
   }
 
   private def createChannel(project: String, bucket: String, fileName: String): Try[ReadChannel] =
